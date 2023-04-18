@@ -20,3 +20,61 @@ importing unwanted symbols):
 ``` python
 from similarity_learning.all import *
 ```
+
+Now we can train a pair-matcher. First let’s construct dataloaders of
+pairs:
+
+``` python
+from fastai.vision.all import *
+
+from fastai_datasets.all import *
+```
+
+``` python
+pairs = Pairs(Imagenette(160), .1)
+dls = pairs.dls(after_item=Resize(128),
+                after_batch=Normalize.from_stats(*imagenet_stats))
+```
+
+    Class map: scanning targets: 0it [00:00, ?it/s]
+
+    Generating positive pairs:   0%|          | 0/473 [00:00<?, ?it/s]
+
+    Generating negative pairs:   0%|          | 0/473 [00:00<?, ?it/s]
+
+    Class map: scanning targets: 0it [00:00, ?it/s]
+
+    Generating positive pairs:   0%|          | 0/196 [00:00<?, ?it/s]
+
+    Generating negative pairs:   0%|          | 0/196 [00:00<?, ?it/s]
+
+To get quick results, we can use the body of a pretrained model as a
+backbone for our Siamese neural network:
+
+``` python
+classifier = resnet34(weights=ResNet34_Weights.DEFAULT)
+siamese = ThresholdSiamese(create_body(model=classifier, cut=-1)).to(dls.device)
+siamese.fit_threshold(dls.train)
+```
+
+    Picking threshold:   0%|          | 0/14 [00:00<?, ?it/s]
+
+    (1.0199999809265137, 0.8705357313156128)
+
+Let’s see how good it is:
+
+``` python
+learn = Learner(dls, siamese, metrics=accuracy)
+learn.validate()
+```
+
+    (#2) [0.5494202971458435,0.8647959232330322]
+
+Not bad, but we can do better with finetuning:
+
+``` python
+learn.fit(5, 1e-4)
+learn.validate()
+```
+
+    (#2) [0.30295976996421814,0.9285714030265808]
