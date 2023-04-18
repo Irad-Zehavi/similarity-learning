@@ -14,10 +14,9 @@ pip install similarity_learning
 
 ## How to use
 
-Fill me in please! Don’t forget code examples:
+As an nbdev library, `similarity_learning` supports `import *` (without
+importing unwanted symbols):
 
 ``` python
-1+1
+from similarity_learning.all import *
 ```
-
-    2
