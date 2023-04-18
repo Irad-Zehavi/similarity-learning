@@ -11,9 +11,9 @@ from fastai.vision.all import *
 
 
 def normalized_squared_euclidean_distance(x1, x2):
-    """
+    r"""
     Squared Euclidean distance over normalized vectors:
-    $$\| x_1/\|x_1\|-x_2/\|x_2\| \|^2 $$
+    $$\left\| \frac{x_1}{\|x_1\|}-\frac{x_2}{\|x_2\|} \right\|^2 $$
     """
     assert x1.dim() <= 2
     assert x2.dim() <= 2
@@ -44,3 +44,28 @@ class DistanceSiamese(Module):
         f1, f2 = L(x).map(self.backbone).map(nn.Flatten())
         return self.distance_metric(f1, f2)
 
+
+# %% ../nbs/siamese.ipynb 5
+from matplotlib.ticker import PercentFormatter
+from tqdm.autonotebook import tqdm
+import numpy as np
+
+@patch
+def plot_distance_histogram(self: DistanceSiamese, pairs_dl: TfmdDL, label='Distance'):
+    """Plots a histogram of intra-class and inter-class distances"""
+    self.eval().cuda()
+    
+    with torch.no_grad():
+        processed_batches = [(self(x), y) for x, y in tqdm(pairs_dl, desc='Computing distances')]
+        distances, targets = [torch.cat(o).cpu().numpy() for o in zip(*processed_batches)]
+
+    _hist(distances[targets==1], 'Intra-Class')
+    _hist(distances[targets==0], 'Inter-Class')
+    
+    plt.legend()
+    plt.xlabel(label)
+
+def _hist(distances, label=None):
+    weights = np.ones_like(distances) / len(distances)  # normalization for percentage ticks
+    plt.hist(distances, label=label, alpha=.5, edgecolor='black', lw=1, weights=weights)
+    plt.gca().yaxis.set_major_formatter(PercentFormatter(1))
