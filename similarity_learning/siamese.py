@@ -53,7 +53,7 @@ import numpy as np
 @patch
 def plot_distance_histogram(self: DistanceSiamese, pairs_dl: TfmdDL, label='Distance'):
     """Plots a histogram of intra-class and inter-class distances"""
-    self.eval().cuda()
+    self.eval().to(pairs_dl.device)
     
     with torch.no_grad():
         processed_batches = [(self(x), y) for x, y in tqdm(pairs_dl, desc='Computing distances')]
