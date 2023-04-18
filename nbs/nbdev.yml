@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "similarity-learning"
+  site-url: "https://Irad-Zehavi.github.io/similarity-learning"
+  description: "A fastai based framework for similarity learning"
+  repo-branch: main
+  repo-url: "https://github.com/Irad-Zehavi/similarity-learning"
