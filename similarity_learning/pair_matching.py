@@ -35,7 +35,7 @@ class ThresholdSiamese(nn.Module):
 @patch
 def fit_threshold(self: ThresholdSiamese, train_dl: DataLoader):
     """Picks a threshold that maximizes the accuracy on a dataloader"""
-    self.eval()
+    self.eval().to(train_dl.device)
     with torch.no_grad():
         distances, targets = zip(*((self.distance(x), y) for x, y in tqdm(train_dl, desc='Picking threshold')))
         distances, targets = torch.cat(distances).as_subclass(Tensor), torch.cat(targets).as_subclass(Tensor)

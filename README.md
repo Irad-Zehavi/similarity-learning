@@ -59,7 +59,7 @@ siamese.fit_threshold(dls.train)
 
     Picking threshold:   0%|          | 0/14 [00:00<?, ?it/s]
 
-    (1.0199999809265137, 0.8705357313156128)
+    (0.9900000095367432, 0.8839285969734192)
 
 Let’s see how good it is:
 
@@ -68,7 +68,7 @@ learn = Learner(dls, siamese, metrics=accuracy)
 learn.validate()
 ```
 
-    (#2) [0.5494202971458435,0.8647959232330322]
+    (#2) [0.5545054078102112,0.8494898080825806]
 
 Not bad, but we can do better with finetuning:
 
@@ -77,4 +77,4 @@ learn.fit(5, 1e-4)
 learn.validate()
 ```
 
-    (#2) [0.30295976996421814,0.9285714030265808]
+    (#2) [0.28614479303359985,0.9438775777816772]

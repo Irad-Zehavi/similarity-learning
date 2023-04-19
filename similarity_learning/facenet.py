@@ -25,5 +25,6 @@ class FaceNetInceptionResnetV1(InceptionResnetV1):
 
 def facenet(pretrained=True) -> ThresholdSiamese:
     """A binary classifier matching pairs of facial images"""
-    backbone = cut_model_by_name(FaceNetInceptionResnetV1(pretrained, classify=False), 'last_bn')
-    return ThresholdSiamese(backbone).cuda()
+    backbone = FaceNetInceptionResnetV1(pretrained, classify=False)
+    backbone = cut_model_by_name(backbone, 'last_bn')  # skip normalization in case we want unnormalized features
+    return ThresholdSiamese(backbone)
