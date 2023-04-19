@@ -2,6 +2,7 @@ website:
   sidebar:
     contents:
       - index.ipynb
+      - facenet.ipynb
       - pair_matching.ipynb
       - siamese.ipynb
       - utils.ipynb
