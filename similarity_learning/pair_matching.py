@@ -31,7 +31,7 @@ class ThresholdSiamese(nn.Module):
         self.distance.plot_distance_histogram(*args, **kwargs)
         plt.axvline(self.threshold.t.item(), linestyle='--', color='grey', label='Threshold')
 
-# %% ../nbs/pair_matching.ipynb 9
+# %% ../nbs/pair_matching.ipynb 11
 @patch
 def fit_threshold(self: ThresholdSiamese, train_dl: DataLoader):
     """Picks a threshold that maximizes the accuracy on a dataloader"""
