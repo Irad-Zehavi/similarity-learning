@@ -3,6 +3,7 @@ website:
     contents:
       - index.ipynb
       - facenet.ipynb
+      - feature_space_plotting.ipynb
       - pair_matching.ipynb
       - siamese.ipynb
       - utils.ipynb
