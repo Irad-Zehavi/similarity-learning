@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['normalized_squared_euclidean_distance', 'ContrastiveLoss', 'DistanceSiamese']
 
-# %% ../nbs/siamese.ipynb 4
+# %% ../nbs/siamese.ipynb 3
 from torch import nn
 from torch.nn.functional import normalize
 
@@ -45,9 +45,9 @@ class DistanceSiamese(Module):
         return self.distance_metric(f1, f2)
 
 
-# %% ../nbs/siamese.ipynb 5
+# %% ../nbs/siamese.ipynb 4
 from matplotlib.ticker import PercentFormatter
-from tqdm.autonotebook import tqdm
+from fastprogress.fastprogress import *
 import numpy as np
 
 @patch
@@ -56,7 +56,7 @@ def plot_distance_histogram(self: DistanceSiamese, pairs_dl: TfmdDL, label='Dist
     self.eval().to(pairs_dl.device)
     
     with torch.no_grad():
-        processed_batches = [(self(x), y) for x, y in tqdm(pairs_dl, desc='Computing distances')]
+        processed_batches = [(self(x), y) for x, y in progress_bar(pairs_dl, comment='Computing distances')]
         distances, targets = [torch.cat(o).cpu().numpy() for o in zip(*processed_batches)]
 
     _hist(distances[targets==1], 'Intra-Class')
