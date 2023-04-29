@@ -36,7 +36,7 @@ def fit_threshold(self: ThresholdSiamese, train_dl: DataLoader):
     """Picks a threshold that maximizes the accuracy on a dataloader"""
     self.eval().to(train_dl.device)
     with torch.no_grad():
-        distances, targets = zip(*((self.distance(x), y) for x, y in progress_bar(train_dl, comment='Picking threshold')))
+        distances, targets = zip(*((self.distance(x), y) for x, y in progress_bar(train_dl)))
         distances, targets = torch.cat(distances).as_subclass(Tensor), torch.cat(targets).as_subclass(Tensor)
 
         return self.threshold.fit(distances, targets) 
