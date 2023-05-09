@@ -50,11 +50,11 @@ siamese.fit_threshold(dls.train)
 
     <div>
       <progress value='14' class='' max='14' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [14/14 00:07&lt;00:00]
+      100.00% [14/14 00:04&lt;00:00]
     </div>
     
 
-    (0.9900000095367432, 0.8627232313156128)
+    (0.9900000095367432, 0.8783482313156128)
 
 Let’s see how good it is:
 
@@ -63,7 +63,7 @@ learn = Learner(dls, siamese, metrics=accuracy)
 learn.validate()
 ```
 
-    (#2) [0.5457545518875122,0.8520408272743225]
+    (#2) [0.5396345853805542,0.8852040767669678]
 
 Not bad, but we can do better with finetuning:
 
@@ -72,4 +72,4 @@ learn.fit(5, 1e-4)
 learn.validate()
 ```
 
-    (#2) [0.30242323875427246,0.9234693646430969]
+    (#2) [0.287169486284256,0.9260203838348389]
