@@ -3,12 +3,12 @@
 # %% auto 0
 __all__ = ['plot_dataset_embedding']
 
-# %% ../nbs/feature_space_plotting.ipynb 5
+# %% ../nbs/feature_space_plotting.ipynb 3
 import numpy as np
 from fastai.vision.all import *
 import matplotlib.pyplot as plt
 
-# %% ../nbs/feature_space_plotting.ipynb 6
+# %% ../nbs/feature_space_plotting.ipynb 4
 def plot_dataset_embedding(dataset: Datasets, feature_extractor, num_samples_per_class=300, normalize_features=False, *args, **kwargs):
     COLORS = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 

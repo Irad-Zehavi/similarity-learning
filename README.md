@@ -58,7 +58,7 @@ siamese.fit_threshold(dls.train)
     </div>
     
 
-    (0.9900000095367432, 0.8783482313156128)
+    (0.9800000190734863, 0.8493303656578064)
 
 Let’s see how good it is:
 
@@ -67,7 +67,13 @@ learn = Learner(dls, siamese, metrics=accuracy)
 learn.validate()
 ```
 
-    (#2) [0.5396345853805542,0.8852040767669678]
+    (#2) [0.5396265387535095,0.8622449040412903]
+
+``` python
+learn.show_results()
+```
+
+![](index_files/figure-commonmark/cell-7-output-2.png)
 
 Not bad, but we can do better with finetuning:
 
@@ -76,4 +82,28 @@ learn.fit(5, 1e-4)
 learn.validate()
 ```
 
-    (#2) [0.287169486284256,0.9260203838348389]
+    (#2) [0.29371750354766846,0.9285714030265808]
+
+``` python
+learn.show_results()
+```
+
+![](index_files/figure-commonmark/cell-9-output-2.png)
+
+We can also consider the distribution of feature-space distances
+compared to the decision threshold:
+
+``` python
+siamese.plot_distance_histogram(dls.valid)
+```
+
+    <div>
+      <progress value='7' class='' max='7' style='width:300px; height:20px; vertical-align: middle;'></progress>
+      100.00% [7/7 00:01&lt;00:00]
+    </div>
+    
+
+![](index_files/figure-commonmark/cell-10-output-2.png)
+
+See the rest of the docs for more examples, including more
+visualizations, comparison of loss functions, and facial recognition.
