@@ -3,7 +3,7 @@
 # %% auto 0
 __all__ = ['FaceNetInceptionResnetV1', 'facenet']
 
-# %% ../nbs/facenet.ipynb 4
+# %% ../nbs/facenet.ipynb 3
 from facenet_pytorch import InceptionResnetV1, fixed_image_standardization
 
 from .utils import *
