@@ -22,7 +22,15 @@ def cut_model_by_name(model, cut):
 
 # %% ../nbs/utils.ipynb 6
 class MLP(Module):
-    def __init__(self, logits: Optional[int], hidden_depth=5, hidden_width=512, features_dim=None):
+    """
+    A Multilayer Perceptron comprized of linear layers with ReLU activations.
+    """
+    def __init__(self,
+                 logits: Optional[int], # Number of logits, pass `None` to not include a logits layer after the hidden layers
+                 hidden_depth=5, # Number of hidden layers
+                 hidden_width=512, # Number of neurons in each hidden layer
+                 features_dim=None  # Number of neurons in the last hidden layer. Pass `None` to use the same value as the other hidden layers
+                 ):
         super().__init__()
         features_dim = features_dim or hidden_width
 
