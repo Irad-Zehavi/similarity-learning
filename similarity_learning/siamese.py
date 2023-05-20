@@ -56,7 +56,7 @@ def plot_distance_histogram(self: DistanceSiamese, pairs_dl: TfmdDL, label='Dist
     self.eval().to(pairs_dl.device)
     
     with torch.no_grad():
-        processed_batches = [(self(x), y) for x, y in progress_bar(pairs_dl)]
+        processed_batches = [(self(x), y) for x, y in progress_bar(pairs_dl, comment='Computing distances', leave=False)]
         distances, targets = [torch.cat(o).cpu().numpy() for o in zip(*processed_batches)]
 
     _hist(distances[targets==1], 'Intra-Class')

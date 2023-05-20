@@ -37,12 +37,6 @@ dls = pairs.dls(after_item=Resize(128),
                 after_batch=Normalize.from_stats(*imagenet_stats))
 ```
 
-    <div>
-      <progress value='196' class='' max='196' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [196/196 00:00&lt;00:00]
-    </div>
-    
-
 To get quick results, we can use the body of a pretrained model as a
 backbone for our Siamese neural network:
 
@@ -52,13 +46,7 @@ siamese = ThresholdSiamese(create_body(model=classifier, cut=-1)).to(dls.device)
 siamese.fit_threshold(dls.train)
 ```
 
-    <div>
-      <progress value='14' class='' max='14' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [14/14 00:05&lt;00:00]
-    </div>
-    
-
-    (1.0299999713897705, 0.8895089626312256)
+    (1.0399999618530273, 0.8839285969734192)
 
 Let’s see how good it is:
 
@@ -67,7 +55,7 @@ learn = Learner(dls, siamese, metrics=accuracy)
 learn.validate()
 ```
 
-    (#2) [0.541471004486084,0.9005101919174194]
+    (#2) [0.5608958601951599,0.8239796161651611]
 
 ``` python
 learn.show_results()
@@ -82,7 +70,7 @@ learn.fit(5, 1e-4)
 learn.validate()
 ```
 
-    (#2) [0.2768465280532837,0.9464285969734192]
+    (#2) [0.2924809157848358,0.9387755393981934]
 
 ``` python
 learn.show_results()
@@ -96,12 +84,6 @@ compared to the decision threshold:
 ``` python
 siamese.plot_distance_histogram(dls.valid)
 ```
-
-    <div>
-      <progress value='7' class='' max='7' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [7/7 00:02&lt;00:00]
-    </div>
-    
 
 ![](index_files/figure-commonmark/cell-10-output-2.png)
 
