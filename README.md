@@ -54,11 +54,11 @@ siamese.fit_threshold(dls.train)
 
     <div>
       <progress value='14' class='' max='14' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [14/14 00:04&lt;00:00]
+      100.00% [14/14 00:05&lt;00:00]
     </div>
     
 
-    (0.9800000190734863, 0.8493303656578064)
+    (1.0299999713897705, 0.8895089626312256)
 
 Let’s see how good it is:
 
@@ -67,7 +67,7 @@ learn = Learner(dls, siamese, metrics=accuracy)
 learn.validate()
 ```
 
-    (#2) [0.5396265387535095,0.8622449040412903]
+    (#2) [0.541471004486084,0.9005101919174194]
 
 ``` python
 learn.show_results()
@@ -82,7 +82,7 @@ learn.fit(5, 1e-4)
 learn.validate()
 ```
 
-    (#2) [0.29371750354766846,0.9285714030265808]
+    (#2) [0.2768465280532837,0.9464285969734192]
 
 ``` python
 learn.show_results()
@@ -99,7 +99,7 @@ siamese.plot_distance_histogram(dls.valid)
 
     <div>
       <progress value='7' class='' max='7' style='width:300px; height:20px; vertical-align: middle;'></progress>
-      100.00% [7/7 00:01&lt;00:00]
+      100.00% [7/7 00:02&lt;00:00]
     </div>
     
 
