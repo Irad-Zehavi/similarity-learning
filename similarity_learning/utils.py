@@ -105,6 +105,7 @@ class ExperimentalResults(object):
 
     def plot_stats(self):
         fig, axs = plt.subplots(len(self.collated_stats), sharex=True)
+        fig.tight_layout()
         for ax, (stat_name, stat_values) in zip(axs, self.collated_stats.items()):
             ax.set_title(stat_name)
 
