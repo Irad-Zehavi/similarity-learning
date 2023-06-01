@@ -51,21 +51,29 @@ from fastprogress.fastprogress import *
 import numpy as np
 
 @patch
-def plot_distance_histogram(self: DistanceSiamese, pairs_dl: TfmdDL, label='Distance'):
-    """Plots a histogram of intra-class and inter-class distances"""
-    self.eval().to(pairs_dl.device)
-    
-    with torch.no_grad():
-        processed_batches = [(self(x), y) for x, y in progress_bar(pairs_dl, leave=False)]
-        distances, targets = [torch.cat(o).cpu().numpy() for o in zip(*processed_batches)]
+def plot_distance_histogram(self: DistanceSiamese, pairs_dls: Union[TfmdDL, Dict[str, TfmdDL]], label='Distance'):
+    """Plots a histogram of intra-class and inter-class distances"""    
+    if isinstance(pairs_dls, DataLoader):
+        pairs_dls = {
+            'Intra-Class': pairs_dls.by_target['Same'],
+            'Inter-Class': pairs_dls.by_target['Not Same']
+        }
 
-    _hist(distances[targets==1], 'Intra-Class')
-    _hist(distances[targets==0], 'Inter-Class')
+    self.eval()
+
+    with torch.no_grad():
+        for label, dl in pairs_dls.items():
+            self._hist(dl, label)
     
     plt.legend()
     plt.xlabel(label)
 
-def _hist(distances, label=None):
+
+@patch
+def _hist(self: DistanceSiamese, dl, label):
+    self.to(dl.device)
+    processed_batches = [self(x) for x, _ in progress_bar(dl, leave=False)]
+    distances = torch.cat(processed_batches).cpu().numpy()
     weights = np.ones_like(distances) / len(distances)  # normalization for percentage ticks
     plt.hist(distances, label=label, alpha=.5, edgecolor='black', lw=1, weights=weights)
     plt.gca().yaxis.set_major_formatter(PercentFormatter(1))
