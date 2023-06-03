@@ -27,8 +27,6 @@ pairs:
 
 ``` python
 from fastai.vision.all import *
-
-from fastai_datasets.all import *
 ```
 
 ``` python
@@ -46,7 +44,7 @@ siamese = ThresholdSiamese(create_body(model=classifier, cut=-1)).to(dls.device)
 siamese.fit_threshold(dls.train)
 ```
 
-    (1.0399999618530273, 0.8839285969734192)
+    (1.0099999904632568, 0.8962054252624512)
 
 Let’s see how good it is:
 
@@ -55,7 +53,7 @@ learn = Learner(dls, siamese, metrics=accuracy)
 learn.validate()
 ```
 
-    (#2) [0.5608958601951599,0.8239796161651611]
+    (#2) [0.5453092455863953,0.8877550959587097]
 
 ``` python
 learn.show_results()
@@ -70,7 +68,7 @@ learn.fit(5, 1e-4)
 learn.validate()
 ```
 
-    (#2) [0.2924809157848358,0.9387755393981934]
+    (#2) [0.26150667667388916,0.954081654548645]
 
 ``` python
 learn.show_results()
