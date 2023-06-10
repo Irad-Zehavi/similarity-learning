@@ -1,0 +1,100 @@
+[
+  {
+    "objectID": "utils.html",
+    "href": "utils.html",
+    "title": "Utils",
+    "section": "",
+    "text": "source"
+  },
+  {
+    "objectID": "utils.html#experiments",
+    "href": "utils.html#experiments",
+    "title": "Utils",
+    "section": "Experiments",
+    "text": "Experiments\nSometimes we want to test a certain procedure (e.g. training a model) multiple times, examine the distribution of the resulting stats. For example, we might want to train and test the same model on different train-test splits, or even the same split to examine the effect of training stochasticity on the results.\nWhile tools like TensorBoard can be used for an in-depth analysis of the whole process (e.g. loss-by-epoch graphs), sometimes we just want to note the distribution of the end results.\nAveraging over multiple runs also gives more stable results, for example cross-validation gives a more accurate estimate to the model’s performance than training once.\n\nsource\n\nRepeatedExperiment\n\n RepeatedExperiment (model:torch.nn.modules.module.Module,\n                     data:List[fastai.data.core.Datasets], seed:int=0)\n\nRuns multiple independent iterations of the same procedure, and combines the results\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nmodel\nModule\n\nThe model to be used in each iteration. Parameter are reset to their initial values before each iteration\n\n\ndata\ntyping.List[fastai.data.core.Datasets]\n\nA list of Datasets, each representing a different iteration. A Dataloaders of the current Datasets is available via self.dls\n\n\nseed\nint\n0\nUsed for reproducibility of results. Use None to avoid reproducibility\n\n\n\n\nsource\n\n\nExperimentalResults\n\n ExperimentalResults (stats:List[Any])\n\nProvides various ways of examining the results of a RepeatedExperiment\n\nsource\n\n\nRepeatedExperiment.run\n\n RepeatedExperiment.run ()\n\nRuns the experiment, returning the results as an ExperimentalResults\nFor example, we can train a linear classifier for MNIST multiple times and check distribution of accuracies:\n\nclass LinearMNIST(RepeatedExperiment):\n    def iteration(self):\n        learn = Learner(self.dls, self.model, metrics=accuracy)\n        learn.fit(1)\n        return dict(zip(['loss', 'accuracy'], learn.validate()))\n    \nres = LinearMNIST(model=nn.Sequential(nn.Flatten(), nn.Linear(28*28, 2)),\n                  data=[TinyMNIST() for _ in range(10)]).run()\n\n\n\n\n\nres.stats\n\n[{'loss': 0.3591866195201874, 'accuracy': 0.9742489457130432},\n {'loss': 0.34896886348724365, 'accuracy': 0.9756795167922974},\n {'loss': 0.3619726896286011, 'accuracy': 0.9771101474761963},\n {'loss': 0.3663684129714966, 'accuracy': 0.9756795167922974},\n {'loss': 0.35216033458709717, 'accuracy': 0.9756795167922974},\n {'loss': 0.35451024770736694, 'accuracy': 0.9771101474761963},\n {'loss': 0.35790905356407166, 'accuracy': 0.9742489457130432},\n {'loss': 0.3541954755783081, 'accuracy': 0.9756795167922974},\n {'loss': 0.3539672791957855, 'accuracy': 0.9771101474761963},\n {'loss': 0.3568763732910156, 'accuracy': 0.9771101474761963}]\n\n\n\nsource\n\n\nExperimentalResults.collated_stats\n\n ExperimentalResults.collated_stats ()\n\n\nres.collated_stats\n\n{'loss': array([0.35918662, 0.34896886, 0.36197269, 0.36636841, 0.35216033,\n        0.35451025, 0.35790905, 0.35419548, 0.35396728, 0.35687637]),\n 'accuracy': array([0.97424895, 0.97567952, 0.97711015, 0.97567952, 0.97567952,\n        0.97711015, 0.97424895, 0.97567952, 0.97711015, 0.97711015])}\n\n\n\nsource\n\n\nExperimentalResults.plot_stats\n\n ExperimentalResults.plot_stats ()\n\n\nres.plot_stats()\n\n\n\n\n\nsource\n\n\nExperimentalResults.stat_means\n\n ExperimentalResults.stat_means ()\n\n\nres.stat_means\n\n{'loss': 0.35661153495311737, 'accuracy': 0.9759656548500061}\n\n\n\nsource\n\n\nExperimentalResults.stat_stds\n\n ExperimentalResults.stat_stds ()\n\n\nres.stat_stds\n\n{'loss': 0.004772754486396994, 'accuracy': 0.0010705668573123257}"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "similarity-learning",
+    "section": "",
+    "text": "See https://irad-zehavi.github.io/similarity-learning/"
+  },
+  {
+    "objectID": "index.html#docs",
+    "href": "index.html#docs",
+    "title": "similarity-learning",
+    "section": "",
+    "text": "See https://irad-zehavi.github.io/similarity-learning/"
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "similarity-learning",
+    "section": "Install",
+    "text": "Install\npip install similarity_learning"
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "similarity-learning",
+    "section": "How to use",
+    "text": "How to use\nAs an nbdev library, similarity_learning supports import * (without importing unwanted symbols):\n\nfrom similarity_learning.all import *\n\nNow we can train a pair-matcher. First let’s construct dataloaders of pairs:\n\nfrom fastai.vision.all import *\n\n\npairs = Pairs(Imagenette(160), .1)\ndls = pairs.dls(after_item=Resize(128),\n                after_batch=Normalize.from_stats(*imagenet_stats))\n\n\n\n\nTo get quick results, we can use the body of a pretrained model as a backbone for our Siamese neural network:\n\nclassifier = resnet34(weights=ResNet34_Weights.DEFAULT)\nsiamese = ThresholdSiamese(create_body(model=classifier, cut=-1)).to(dls.device)\nsiamese.fit_threshold(dls.train)\n\n\n\n\n(1.0099999904632568, 0.8962054252624512)\n\n\nLet’s see how good it is:\n\nlearn = Learner(dls, siamese, metrics=accuracy)\nlearn.validate()\n\n\n\n\n(#2) [0.5453092455863953,0.8877550959587097]\n\n\n\nlearn.show_results()\n\n\n\n\n\n\n\nNot bad, but we can do better with finetuning:\n\nlearn.fit(5, 1e-4)\nlearn.validate()\n\n\n\n\n(#2) [0.26150667667388916,0.954081654548645]\n\n\n\nlearn.show_results()\n\n\n\n\n\n\n\nWe can also consider the distribution of feature-space distances compared to the decision threshold:\n\nsiamese.plot_distance_histogram(dls.valid)\n\n\n\n\n\n\n\nSee the rest of the docs for more examples, including more visualizations, comparison of loss functions, and facial recognition."
+  },
+  {
+    "objectID": "facenet.html",
+    "href": "facenet.html",
+    "title": "FaceNet",
+    "section": "",
+    "text": "source"
+  },
+  {
+    "objectID": "facenet.html#performance-on-lfw",
+    "href": "facenet.html#performance-on-lfw",
+    "title": "FaceNet",
+    "section": "Performance on LFW",
+    "text": "Performance on LFW\nLet’s start by quickly evaluating on the development view of LFW:\n\ndls = LFWPairs().dev().dls()\nface_matcher = facenet()\n\nface_matcher.fit_threshold(dls.train)\nlearn = Learner(dls, face_matcher, metrics=accuracy)\nlearn.validate()\n\n\n\n\n(#2) [0.22585052251815796,0.9919999837875366]\n\n\n\nlearn.show_results()\n\n\n\n\n\n\n\n\nface_matcher.plot_distance_histogram(dls.valid)\n\n\n\n\n\n\n\nWe can also evaluate the test accuracy (as defined by LFW: 10-fold cross validation on the test view):\n\nclass FacenetCrossValidation(RepeatedExperiment):\n    def iteration(self):\n        self.model.fit_threshold(self.dls.train)\n        stats = Learner(self.dls, self.model, metrics=accuracy).validate()\n        return dict(zip(['loss', 'accuracy'], stats))\n\n\nres = FacenetCrossValidation(facenet('vggface2'), LFWPairs().test()).run()\n\n\n\n\n\nres.plot_stats()\n\n\n\n\n\nprint(as_percentage(res.stat_means['accuracy']))\n\n99.35%"
+  },
+  {
+    "objectID": "facenet.html#performance-on-sllfw",
+    "href": "facenet.html#performance-on-sllfw",
+    "title": "FaceNet",
+    "section": "Performance on SLLFW",
+    "text": "Performance on SLLFW\nFor a quick evaluation, let’s use the first cross-validation split (since SLLFW doesn’t have a dev view)\n\ndls = SLLFWPairs().test()[0].dls()\nface_matcher = facenet()\n\nface_matcher.fit_threshold(dls.train)\nlearn = Learner(dls, face_matcher, metrics=accuracy)\nlearn.validate()\n\n\n\n\n(#2) [0.36826473474502563,0.9466666579246521]\n\n\n\nlearn.show_results()\n\n\n\n\n\n\n\n\nface_matcher.plot_distance_histogram(dls.valid)\n\n\n\n\n\n\n\nAnd evaluating properly using the 10-fold cross validation:\n\nres = FacenetCrossValidation(facenet('vggface2'), SLLFWPairs().test()).run()\n\n\n\n\n\nres.plot_stats()\n\n\n\n\n\nprint(as_percentage(res.stat_means['accuracy']))\n\n94.85%"
+  },
+  {
+    "objectID": "siamese.html",
+    "href": "siamese.html",
+    "title": "Siamese Neural Network",
+    "section": "",
+    "text": "source\n\nDistanceSiamese\n\n DistanceSiamese (backbone:fastai.torch_core.Module,\n                  distance_metric=&lt;function\n                  normalized_squared_euclidean_distance&gt;)\n\nOutputs the distance between two inputs in feature space\n\n\n\n\n\n\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\nbackbone\nModule\n\nembeds inputs in a feature space\n\n\ndistance_metric\nfunction\nnormalized_squared_euclidean_distance\n\n\n\n\n\nsource\n\n\nContrastiveLoss\n\n ContrastiveLoss (margin:float=1.0, size_average=None, reduce=None,\n                  reduction:str='mean')\n\nSame as loss_cls, but flattens input and target.\n\nsource\n\n\nnormalized_squared_euclidean_distance\n\n normalized_squared_euclidean_distance (x1, x2)\n\nSquared Euclidean distance over normalized vectors: \\[\\left\\| \\frac{x_1}{\\|x_1\\|}-\\frac{x_2}{\\|x_2\\|} \\right\\|^2 \\]\n\nsource\n\n\nDistanceSiamese.plot_distance_histogram\n\n DistanceSiamese.plot_distance_histogram (pairs_dls:Union[fastai.data.core\n                                          .TfmdDL,Dict[str,fastai.data.cor\n                                          e.TfmdDL]], label='Distance')\n\nPlots a histogram of intra-class and inter-class distances\n\nfrom fastai_datasets.all import *\n\n\nclassifier = resnet34(weights=ResNet34_Weights.DEFAULT)\nsiamese = DistanceSiamese(create_body(model=classifier, cut=-1))\n\n\npairs = Pairs(Imagenette(160), .1)\ndls = pairs.dls(after_item=Resize(128),\n                after_batch=Normalize.from_stats(*imagenet_stats))\n\n\n\n\nWhen starting with a decent backbone, positive pairs are closer than negative pairs:\n\nsiamese.plot_distance_histogram(dls.valid)\n\n\n\n\n\n\n\nTrain with contrastive loss:\n\nlearn = Learner(dls, siamese, ContrastiveLoss(margin=1.5))\nlearn.fit_one_cycle(3)\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\ntime\n\n\n\n\n0\n0.431103\n0.475045\n00:12\n\n\n1\n0.325288\n0.382971\n00:16\n\n\n2\n0.272254\n0.308985\n00:17\n\n\n\n\n\n\nsiamese.plot_distance_histogram(dls.valid)"
+  },
+  {
+    "objectID": "feature_space_plotting.html",
+    "href": "feature_space_plotting.html",
+    "title": "Plotting Feature Space",
+    "section": "",
+    "text": "Since the backbone (in charge of embedding in feature space) plays such an intergral role in similarity learning, it’s natural that we’d want to examine it. While it’s usually too high-dimensional to plot directly, we could force it to be low-dimensional for the purpose of plotting.\n\nsource\n\nplot_dataset_embedding\n\n plot_dataset_embedding (dataset:fastai.data.core.Datasets,\n                         feature_extractor, num_samples_per_class=300,\n                         normalize_features=False, *args, **kwargs)\n\nIn order to properly classify using only 3 features, we should pick a relatively simple dataset. Let’s use MNIST:\n\nfrom torch import nn\n\nfrom fastai_datasets.all import *\n\nfrom similarity_learning.utils import *\nfrom similarity_learning.siamese import *\nfrom similarity_learning.pair_matching import *\n\n\nmnist = MNIST()\nmnist = mnist.by_target['0'] + mnist.by_target['1'] + mnist.by_target['2'] + mnist.by_target['3']\n\n\n    \n      \n      100.00% [10/10 00:00&lt;00:00]\n    \n    \n\n\n\nlearn = Learner(mnist.dls(), MLP(10, features_dim=2), metrics=accuracy)\nlearn.fit(1)\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\naccuracy\ntime\n\n\n\n\n0\n0.097074\n0.062883\n0.982680\n00:11\n\n\n\n\n\n\nplot_dataset_embedding(mnist, cut_model_by_name(learn.model, 'hidden_layers'))\n\n\n    \n      \n      100.00% [4/4 00:00&lt;00:00]\n    \n    \n\n\n\n\n\nCompare with training a ThresholdSiamese and extracting the backbone:\n\nlearn = Learner(Pairs(mnist, 1).dls(), ThresholdSiamese(MLP(None, features_dim=2)), metrics=accuracy)\nlearn.fit(1)\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\naccuracy\ntime\n\n\n\n\n0\n0.314940\n0.277123\n0.966314\n00:24\n\n\n\n\n\n\nplot_dataset_embedding(mnist, learn.model.distance.backbone)\n\n\n\n\nAnd with training a backbone with ContrastiveLoss\n\nlearn = Learner(Pairs(mnist, 1).dls(), DistanceSiamese(MLP(None, features_dim=2)), ContrastiveLoss())\nlearn.fit(1)\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\ntime\n\n\n\n\n0\n0.048055\n0.039739\n00:25\n\n\n\n\n\n\nplot_dataset_embedding(mnist, learn.model.backbone)"
+  },
+  {
+    "objectID": "pair_matching.html",
+    "href": "pair_matching.html",
+    "title": "Pair Matching (AKA Verification)",
+    "section": "",
+    "text": "source"
+  },
+  {
+    "objectID": "pair_matching.html#training",
+    "href": "pair_matching.html#training",
+    "title": "Pair Matching (AKA Verification)",
+    "section": "Training",
+    "text": "Training\nWe can construct the backbone from a pretrained classifier:\n\nclassifier = resnet34(weights=ResNet34_Weights.DEFAULT)\nsiamese = ThresholdSiamese(create_body(model=classifier, cut=-1))\n\nAs explained in Threshold.fit, we can fit the threshold directly:\n\nsource\n\nThresholdSiamese.fit_threshold\n\n ThresholdSiamese.fit_threshold (train_dl:fastai.data.load.DataLoader)\n\nPicks a threshold that maximizes the accuracy on a dataloader\n\nsiamese.fit_threshold(dls.train)\n\nlearn = Learner(dls, siamese, metrics=accuracy)\nlearn.validate()\n\n\n\n\n(#2) [0.5470428466796875,0.8622449040412903]\n\n\nWe can finetune the backbone in multiple ways:\n\n\nCross Entropy\nSince ThresholdSiamese is a classifier, we can finetune it using the cross entropy loss, which will fit the backbone and the threshold together:\n\nlearn.fit(5, 1e-4)\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\naccuracy\ntime\n\n\n\n\n0\n0.507261\n0.415415\n0.900510\n00:16\n\n\n1\n0.401674\n0.354739\n0.928571\n00:17\n\n\n2\n0.337908\n0.326078\n0.920918\n00:10\n\n\n3\n0.293121\n0.304959\n0.931122\n00:09\n\n\n4\n0.259705\n0.288149\n0.933673\n00:09\n\n\n\n\n\n\n\nContrastive Loss\nConversely, we can finetune the backbone directly, and then fit the threshold again:\n\nclassifier = resnet34(weights=ResNet34_Weights.DEFAULT)\nsiamese = DistanceSiamese(create_body(model=classifier, cut=-1))\nlearn = Learner(dls, siamese, ContrastiveLoss())\nlearn.fit(5, 1e-4)\n\n\n\n\nepoch\ntrain_loss\nvalid_loss\ntime\n\n\n\n\n0\n0.394097\n0.317473\n00:09\n\n\n1\n0.272054\n0.211472\n00:09\n\n\n2\n0.199547\n0.171662\n00:09\n\n\n3\n0.152234\n0.149710\n00:09\n\n\n4\n0.118441\n0.140471\n00:09\n\n\n\n\n\n\nsiamese = ThresholdSiamese(siamese.backbone)\nsiamese.fit_threshold(dls.train)\n\nlearn = Learner(dls, siamese, metrics=accuracy)\nlearn.validate()\n\n\n\n\n(#2) [0.36787182092666626,0.9081632494926453]"
+  },
+  {
+    "objectID": "pair_matching.html#visualizing-results",
+    "href": "pair_matching.html#visualizing-results",
+    "title": "Pair Matching (AKA Verification)",
+    "section": "Visualizing Results",
+    "text": "Visualizing Results\n\nlearn.show_results()\n\n\n\n\n\n\n\nIf we plot the distance histogram, we can also see the threshold:\n\nsiamese.plot_distance_histogram(dls.train)"
+  }
+]
